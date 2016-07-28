@@ -1,0 +1,62 @@
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="css/style.scss"></style>
+</head>
+
+<body>
+	<div class="container">
+		<div class="option-box">
+			<h1>Map Options</h1>
+			
+			<div>
+				<fieldset>
+					<span id="text">Destination:  </span>
+					<input id="destination" type="text" placeholder="Ex: Station Square"><br \>
+				</fieldset>
+			</div>
+
+			<div>
+				<fieldset>
+					<input type="range" id="commute-time" name="commute-time" value="5" min="5" max="65" step="5">
+					<span id="selected-time"></span>
+				</fieldset>
+			</div>
+
+			<div>
+				<span>
+					<fieldset id = "mode">
+						<input type="radio" name="mode" value="DRIVING" checked>Car
+						<input type="radio" name="mode" value="BICYCLING">Bike
+						<input type="radio" name="mode" value="TRANSIT">Public Transit
+						<input type="radio" name="mode" value="WALKING">Walk
+					</fieldset>
+				</span>
+			</div>
+
+			<input id="zoom-go" type="button" value="Go!">
+
+			
+
+			<div id="geocodeOutput">
+			</div>
+
+			<hr>
+
+			<div>
+				<input id="show-listings" type="button" value="Show Listings">
+				<input id="hide-listings" type="button" value="Hide Listings">
+			</div>
+
+			
+		</div>
+	
+
+		<div id="googleMap">
+		</div>
+	</div>
+	<script async defer src="http://maps.googleapis.com/maps/api/js?key=AIzaSyDpXc-lS9K0NDQcnE2VaS3DhFORKJfB6yQ&v=3&callback=initMap"></script>
+	<script src="js/app.js" type="text/javascript" charset="utf-8"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,35 @@
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="css/style.scss"></style>
+</head>
+
+<body>
+	<div class="container">
+		<div class="option-box">
+			<h1>Map Options</h1>
+			<div>
+				<input id="show-listings" type="button" value="Show Listings">
+				<input id="hide-listings" type="button" value="Hide Listings">
+			</div>
+			<hr>
+
+			<div>
+				<input id="map-zoom-area" type="text" placeholder="Where would you like to look?">
+				<input id="zoom-go" type="button" value="Zoom!">
+			</div>
+
+			<div id="geocodeOutput">
+			</div>
+
+		</div>
+	
+
+		<div id="googleMap">
+		</div>
+	</div>
+	<script async defer src="http://maps.googleapis.com/maps/api/js?key=AIzaSyDpXc-lS9K0NDQcnE2VaS3DhFORKJfB6yQ&v=3&callback=initMap"></script>
+	<script src="js/app.js" type="text/javascript" charset="utf-8"></script>
+
+</body>
+
+</html>
