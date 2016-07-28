@@ -68,6 +68,7 @@ function initMap() {
 	}
 
 	function zoomToArea() {
+		console.log("in zoomToArea function");
 		var geocoder = new google.maps.Geocoder();
 		//Get the address entered by user
 		var destinationAddress = document.getElementById("destination").value;
@@ -105,7 +106,7 @@ function initMap() {
 
 	function searchWithinTime() {
 		zoomToArea();
-		console.log("search within time");
+		console.log("in searchWithinTime function");
 		var distanceMatrixService = new google.maps.DistanceMatrixService;
 		var destinationAddress = document.getElementById("destination").value;
 		if (destinationAddress == '') {
@@ -126,7 +127,7 @@ function initMap() {
 				travelMode: google.maps.TravelMode[mode],
 				unitSystem: google.maps.UnitSystem.initMapERIAL,
 			}, function(response, status) {
-				if (status !== google.maps.DistanceMatrixService.OK) {
+				if (status !== "OK") {
 					window.alert("Error: " + status);
 				}
 				else {
@@ -138,15 +139,17 @@ function initMap() {
 
 	function displayMarkersWithinTime(response) {
 		console.log("in displayMarkersWithinTime function");
+		//Get user input for max travel time
 		var maxTravelTime = document.getElementById("commute-time").value;
+		//Get array of origin addresses
 		var origins = response.originAddresses;
+		//Get array of destination addresses
 		var destinations = response.destinationAddresses;
-		//Parse through results to get distance and duration of each
-		//Use nested loop because there might be multiple origins and destinations
-		//Make sure at least one result is found
+		//Parse through results to get distance and duration of each origin-destination pair
+		//Track whether at least one result is found
 		var atLeastOne = false;
 		for (var i = 0; i < origins.length; i++) {
-			//Creates one element per origin + destination pair
+			//Tracks one element dataset per origin + destination pair
 			var results = response.rows[i].elements;
 			for (var j = 0; j < results.length; j++) {
 				var element = results[j];
@@ -157,15 +160,19 @@ function initMap() {
 					var durationValue = element.duration.value / 60;
 					var durationText = element.duration.text;
 					if (durationValue <= maxTravelTime) {
+						//origins[i] = markers[i] -- Set the marker on the map if it's within the max travel time
 						markers[i].setMap(map);
 						atLeastOne = true;
+						//Create an info window with travel time and distance
 						var infoWindow = new google.maps.InfoWindow({
 							content: durationText + " away, " + distanceText,
 						});
+						//Immediately opens the info window for each marker within the max travel time
 						infoWindow.open(map, markers[i]);
-						//Put this in a small window, when user clicks it opens the big window
+						//When user closes the small window (with travel time, distance)
+						//The next time they click on the marker it opens the big info window (from populateInfoWindow())
 						markers[i].infoWindow = infoWindow;
-						google.maps.event.addListener(markers[i], 'click', function() {
+						google.maps.event.addEventListener(markers[i], 'click', function() {
 							this.infoWindow.close();
 						});
 					}
