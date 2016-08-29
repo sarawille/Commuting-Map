@@ -10,7 +10,11 @@ function initMap() {
 	});
 
 	var locations = [
-		{title: 'Place 1', location: {lat: 39.1, lng:-84.5}},
+		{title: 'Random Place 1', location: {lat: 39.1, lng:-84.5}},
+		{title: 'Toyota', location: {lat:39.0469144, lng:-84.6246263}},
+		{title: 'Nielsen', location: {lat: 39.1021684, lng: -84.5107109}},
+		{title: 'Centric', location: {lat: 39.2263451, lng: -84.3569102}},
+		{title: 'Random Place 2', location: {lat: 39.1042068, lng: -84.5816587}},
 	];
 
 	var largeInfoWindow = new google.maps.InfoWindow();
@@ -58,7 +62,7 @@ function initMap() {
 			bounds.extend(markers[i].position);
 		}
 		//Tell map to fit boudnaries of markers
-		//map.fitBounds(bounds);
+		map.fitBounds(bounds);
 	}
 
 	function hideListings() {
@@ -108,33 +112,34 @@ function initMap() {
 		zoomToArea();
 		console.log("in searchWithinTime function");
 		var distanceMatrixService = new google.maps.DistanceMatrixService;
+		//Get destination from user input
 		var destinationAddress = document.getElementById("destination").value;
-		if (destinationAddress == '') {
-			// window.alert('You must enter a city or address.');
+		
+		hideListings();
+
+		//Create an array "origins" containing the LatLng ("position") data from the markers array
+		var origins = [];
+		for (var i = 0; i < markers.length; i++) {
+			origins[i] = markers[i].position;
 		}
-		else {
-			hideListings();
-			var origins = [];
-			for (var i = 0; i < markers.length; i++) {
-				origins[i] = markers[i].position;
+
+		//Get transportation mode from user input
+		var mode = document.querySelector('input[name="mode"]:checked').value;
+
+		distanceMatrixService.getDistanceMatrix({
+			origins: origins,
+			destinations: [destinationAddress],
+			travelMode: google.maps.TravelMode[mode],
+			unitSystem: google.maps.UnitSystem.initMapERIAL,
+		}, function(response, status) {
+			if (status !== "OK") {
+				window.alert("Error: " + status);
 			}
-
-			var mode = document.querySelector('input[name="mode"]:checked').value;
-
-			distanceMatrixService.getDistanceMatrix({
-				origins: origins,
-				destinations: [destinationAddress],
-				travelMode: google.maps.TravelMode[mode],
-				unitSystem: google.maps.UnitSystem.initMapERIAL,
-			}, function(response, status) {
-				if (status !== "OK") {
-					window.alert("Error: " + status);
-				}
-				else {
-					displayMarkersWithinTime(response);
-				}
-			});
-		}
+			else {
+				displayMarkersWithinTime(response);
+			}
+		});
+		
 	}
 
 	function displayMarkersWithinTime(response) {
