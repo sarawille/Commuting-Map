@@ -43,14 +43,12 @@ function initMap() {
 	document.getElementById("commute-time").addEventListener('change', showVal);
 
 	function populateInfoWindow(marker, infowindow) {
-		if (infowindow.marker != marker) {
-			infowindow.marker = marker;
-			infowindow.setContent('<div><center>' + marker.title + '<p>' + marker.position + '</div>');
-			infowindow.open(map, marker);
-			infowindow.addListener('closeclick', function() {
-				infowindow.setMarker(null);
-			});
-		}
+		infowindow.marker = marker;
+		infowindow.setContent('<div><center>' + marker.title + '<p>' + marker.position + '</div>');
+		infowindow.open(map, marker);
+		infowindow.addListener('closeclick', function() {
+			infowindow.setMap(null);
+		});
 	}
 
 	function showListings() {
