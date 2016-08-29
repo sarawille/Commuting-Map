@@ -18,6 +18,8 @@ function initMap() {
 	];
 
 	var largeInfoWindow = new google.maps.InfoWindow();
+
+	var destinationMarker = new google.maps.Marker();
 	
 	for (var i = 0; i < locations.length; i++) {
 		var thisTitle = locations[i].title;
@@ -91,14 +93,17 @@ function initMap() {
 					//Show the formatted address in the side bar
 					// document.getElementById("geocodeOutput").innerHTML=results[0].formatted_address;
 					//Add a marker for the Destination
-					var thisMarker = new google.maps.Marker({
+					destinationMarker.setMap(null);
+					destinationMarker = new google.maps.Marker({
 						position: newLocation,
 						title: "Destination",
 						animation: google.maps.Animation.DROP,
 						icon: 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png',
 					});
-					//Add new marker to the marker array so it shows up when I click "Show Listings" button
-					markers.push(thisMarker);
+					destinationMarker.setMap(map);
+					destinationMarker.addListener('click', function() {
+						populateInfoWindow(this, largeInfoWindow);
+					});	
 					showListings();
 				}
 				else {
