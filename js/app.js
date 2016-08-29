@@ -26,6 +26,7 @@ function initMap() {
 			position: thisPosition,
 			title: thisTitle,
 			animation: google.maps.Animation.DROP,
+			icon: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png',
 			id: i
 		});
 		//Add each new marker to the markers array
@@ -94,6 +95,7 @@ function initMap() {
 						position: newLocation,
 						title: "Destination",
 						animation: google.maps.Animation.DROP,
+						icon: 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png',
 					});
 					//Add new marker to the marker array so it shows up when I click "Show Listings" button
 					markers.push(thisMarker);
