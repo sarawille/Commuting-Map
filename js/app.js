@@ -47,7 +47,7 @@ function initMap() {
 		infowindow.setContent('<div><center>' + marker.title + '<p>' + marker.position + '</div>');
 		infowindow.open(map, marker);
 		infowindow.addListener('closeclick', function() {
-			infowindow.setMap(null);
+			// infowindow.setMap(null);
 		});
 	}
 
