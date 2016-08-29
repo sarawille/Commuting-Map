@@ -10,11 +10,11 @@ function initMap() {
 	});
 
 	var locations = [
-		{title: 'Random Place 1', location: {lat: 39.1, lng:-84.5}},
+		{title: 'Random Place 1', location: {lat: 39.05, lng:-84.529}},
 		{title: 'Toyota', location: {lat:39.0469144, lng:-84.6246263}},
 		{title: 'Nielsen', location: {lat: 39.1021684, lng: -84.5107109}},
 		{title: 'Centric', location: {lat: 39.2263451, lng: -84.3569102}},
-		{title: 'Random Place 2', location: {lat: 39.1042068, lng: -84.5816587}},
+		// {title: 'Random Place 2', location: {lat: 39.1042068, lng: -84.5816587}},
 	];
 
 	var largeInfoWindow = new google.maps.InfoWindow();
@@ -121,11 +121,13 @@ function initMap() {
 		var origins = [];
 		for (var i = 0; i < markers.length; i++) {
 			origins[i] = markers[i].position;
+			console.log(origins[i]);
 		}
 
 		//Get transportation mode from user input
 		var mode = document.querySelector('input[name="mode"]:checked').value;
 
+		//Send the origins, destination, travel mode, etc. and execute displayMarkersWithinTime() if status === OK
 		distanceMatrixService.getDistanceMatrix({
 			origins: origins,
 			destinations: [destinationAddress],
@@ -177,7 +179,7 @@ function initMap() {
 						//When user closes the small window (with travel time, distance)
 						//The next time they click on the marker it opens the big info window (from populateInfoWindow())
 						markers[i].infoWindow = infoWindow;
-						google.maps.event.addEventListener(markers[i], 'click', function() {
+						google.maps.event.addListener(markers[i], 'click', function() {
 							this.infoWindow.close();
 						});
 					}
