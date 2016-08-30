@@ -205,9 +205,6 @@ function initMap() {
 					//Duration value is returned in seconds, but we adjust it to minutes
 					var durationValue = element.duration.value / 60;
 					var durationText = element.duration.text;
-					console.log(markers[i].title);
-					console.log(durationText);
-					console.log((durationValue <= maxTravelTime));
 					if (durationValue <= maxTravelTime) {
 						atLeastOne = true;
 
