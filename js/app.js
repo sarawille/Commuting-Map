@@ -241,13 +241,16 @@ function initMap() {
 			}
 		}
 
-		//Tell map to fit boudnaries of markers
-		map.fitBounds(bounds);
+
 
 		//Display alert if nothing is found within the max travel time
 		if(atLeastOne === false) {
 				window.alert("Sorry, no locations were found within the maximum travel time selected.");
 				zoomToArea();
+		} else {
+			//Tell map to fit boudnaries of markers, including destination
+			bounds.extend(destinationMarker.position);
+			map.fitBounds(bounds);
 		}
 
 	}
