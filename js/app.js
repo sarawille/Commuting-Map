@@ -18,7 +18,6 @@ function initMap() {
 	];
 
 	var largeInfoWindow = new google.maps.InfoWindow();
-	var timeInfoWindow = new google.maps.InfoWindow();
 
 	var destinationMarker = new google.maps.Marker();
 	
@@ -131,10 +130,6 @@ function initMap() {
 	function searchWithinTime() {
 		zoomToArea();
 
-		//Close all time info windows from previous search
-		//NEED TO FIX THIS STILL -- it will only close the most recent timeInfoWindow, need to close them all!!
-		timeInfoWindow.close();
-
 		console.log("in searchWithinTime function");
 		var distanceMatrixService = new google.maps.DistanceMatrixService;
 		//Get destination from user input
@@ -217,7 +212,6 @@ function initMap() {
 						//I think I can delete all of this commented-out code
 						//When user closes the small window (with travel time, distance)
 						//The next time they click on the marker it opens the big info window (from populateInfoWindow())
-						// markers[i].infoWindow = timeInfoWindow;
 						// google.maps.event.addListener(markers[i], 'click', function() {	
 						// 	populateInfoWindow(this, largeInfoWindow);
 						// });
