@@ -18,6 +18,7 @@ function initMap() {
 	];
 
 	var largeInfoWindow = new google.maps.InfoWindow();
+	var timeInfoWindow = new google.maps.InfoWindow();
 
 	var destinationMarker = new google.maps.Marker();
 	
@@ -39,6 +40,8 @@ function initMap() {
 		});	
 	}	
 
+
+
 	document.getElementById("show-listings").addEventListener('click', showListings);
 	document.getElementById("hide-listings").addEventListener('click', hideListings);
 	document.getElementById("zoom-go").addEventListener('click', searchWithinTime);
@@ -47,11 +50,20 @@ function initMap() {
 
 	function populateInfoWindow(marker, infowindow) {
 		infowindow.marker = marker;
-		infowindow.setContent('<div><center>' + marker.title + '<p>' + marker.position + '</div>');
+		infowindow.setContent('<div><center>' + marker.title + '</div>');
 		infowindow.open(map, marker);
-		infowindow.addListener('closeclick', function() {
+		// infowindow.addListener('closeclick', function() {
 			// infowindow.setMap(null);
-		});
+		// });
+	}
+
+	function populateInfoWindowWithTime(marker, infowindow, durationText) {
+		infowindow.marker = marker;
+		infowindow.setContent(
+			'<div><center>' + marker.title + '<p>' +  
+			durationText + ' away, ' +
+			'</div>');
+		infowindow.open(map, marker);
 	}
 
 	function showListings() {
@@ -87,13 +99,17 @@ function initMap() {
 			}, function(results, status) {
 				if (status == google.maps.GeocoderStatus.OK) {
 					var newLocation = results[0].geometry.location;
+					
 					//Move the map to show the Destination
 					map.setCenter(newLocation);
 					map.setZoom(12);
+					
 					//Show the formatted address in the side bar
 					// document.getElementById("geocodeOutput").innerHTML=results[0].formatted_address;
-					//Add a marker for the Destination
+					
+					//Clear previous destination marker
 					destinationMarker.setMap(null);
+					//Create a marker for the newly searched destination
 					destinationMarker = new google.maps.Marker({
 						position: newLocation,
 						title: "Destination",
@@ -104,7 +120,9 @@ function initMap() {
 					destinationMarker.addListener('click', function() {
 						populateInfoWindow(this, largeInfoWindow);
 					});	
-					showListings();
+					
+					//Show all markers on the map
+					// showListings();
 				}
 				else {
 					document.getElementById("geocodeOutput").innerHTML="Sorry, we could not find that location.";
@@ -115,6 +133,11 @@ function initMap() {
 
 	function searchWithinTime() {
 		zoomToArea();
+
+		//Close all time info windows from previous search
+		//NEED TO FIX THIS STILL -- it will only close the most recent timeInfoWindow, need to close them all!!
+		timeInfoWindow.close();
+
 		console.log("in searchWithinTime function");
 		var distanceMatrixService = new google.maps.DistanceMatrixService;
 		//Get destination from user input
@@ -151,6 +174,7 @@ function initMap() {
 
 	function displayMarkersWithinTime(response) {
 		console.log("in displayMarkersWithinTime function");
+
 		//Get user input for max travel time
 		var maxTravelTime = document.getElementById("commute-time").value;
 		//Get array of origin addresses
@@ -161,6 +185,10 @@ function initMap() {
 		//Track whether at least one result is found
 		var atLeastOne = false;
 		for (var i = 0; i < origins.length; i++) {
+			//Clear travel time for past search from info windows
+			markers[i].addListener('click', function() {
+				populateInfoWindow(this, largeInfoWindow);
+			});
 			//Tracks one element dataset per origin + destination pair
 			var results = response.rows[i].elements;
 			for (var j = 0; j < results.length; j++) {
@@ -171,22 +199,31 @@ function initMap() {
 					//Duration value is returned in seconds, but we adjust it to minutes
 					var durationValue = element.duration.value / 60;
 					var durationText = element.duration.text;
+					console.log(markers[i].title);
+					console.log(durationText);
+					console.log((durationValue <= maxTravelTime));
 					if (durationValue <= maxTravelTime) {
+						atLeastOne = true;
+
 						//origins[i] = markers[i] -- Set the marker on the map if it's within the max travel time
 						markers[i].setMap(map);
-						atLeastOne = true;
-						//Create an info window with travel time and distance
-						var infoWindow = new google.maps.InfoWindow({
-							content: durationText + " away, " + distanceText,
+
+						//Add durationText as custom data to each marker within the maxTravelTime
+						markers[i].customInfo = durationText;
+						
+						//Create an info window with travel time
+						markers[i].addListener('click', function() {
+							populateInfoWindowWithTime(this, largeInfoWindow, this.customInfo);
 						});
-						//Immediately opens the info window for each marker within the max travel time
-						infoWindow.open(map, markers[i]);
+						
+
+						//I think I can delete all of this commented-out code
 						//When user closes the small window (with travel time, distance)
 						//The next time they click on the marker it opens the big info window (from populateInfoWindow())
-						markers[i].infoWindow = infoWindow;
-						google.maps.event.addListener(markers[i], 'click', function() {
-							this.infoWindow.close();
-						});
+						// markers[i].infoWindow = timeInfoWindow;
+						// google.maps.event.addListener(markers[i], 'click', function() {	
+						// 	populateInfoWindow(this, largeInfoWindow);
+						// });
 					}
 				}
 			}
