@@ -120,9 +120,6 @@ function initMap() {
 					destinationMarker.addListener('click', function() {
 						populateInfoWindow(this, largeInfoWindow);
 					});	
-					
-					//Show all markers on the map
-					// showListings();
 				}
 				else {
 					document.getElementById("geocodeOutput").innerHTML="Sorry, we could not find that location.";
