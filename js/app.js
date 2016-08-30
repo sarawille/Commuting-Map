@@ -49,17 +49,31 @@ function initMap() {
 
 	function populateInfoWindow(marker, infowindow) {
 		infowindow.marker = marker;
-		infowindow.setContent('<div><center>' + marker.title + '</div>');
+		infowindow.setContent(
+			'<div><center>' + 
+			marker.title + 
+			'</div>');
 		infowindow.open(map, marker);
 		// infowindow.addListener('closeclick', function() {
 			// infowindow.setMap(null);
 		// });
 	}
 
+	function populateDestinationInfoWindow(marker, infowindow, formattedAddress) {
+		infowindow.marker = marker;
+		infowindow.setContent(
+			'<div><center>' + 
+			marker.title + '<p>' +  
+			formattedAddress +
+			'</div>');
+		infowindow.open(map, marker);
+	}
+
 	function populateInfoWindowWithTime(marker, infowindow, durationText) {
 		infowindow.marker = marker;
 		infowindow.setContent(
-			'<div><center>' + marker.title + '<p>' +  
+			'<div><center>' + 
+			marker.title + '<p>' +  
 			durationText + ' away, ' +
 			'</div>');
 		infowindow.open(map, marker);
@@ -98,13 +112,11 @@ function initMap() {
 			}, function(results, status) {
 				if (status == google.maps.GeocoderStatus.OK) {
 					var newLocation = results[0].geometry.location;
+					var destinationFormatted = document.getElementById("geocodeOutput").innerHTML=results[0].formatted_address;
 					
 					//Move the map to show the Destination
 					map.setCenter(newLocation);
 					map.setZoom(12);
-					
-					//Show the formatted address in the side bar
-					// document.getElementById("geocodeOutput").innerHTML=results[0].formatted_address;
 					
 					//Clear previous destination marker
 					destinationMarker.setMap(null);
@@ -115,9 +127,11 @@ function initMap() {
 						animation: google.maps.Animation.DROP,
 						icon: 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png',
 					});
+
 					destinationMarker.setMap(map);
+
 					destinationMarker.addListener('click', function() {
-						populateInfoWindow(this, largeInfoWindow);
+						populateDestinationInfoWindow(this, largeInfoWindow, destinationFormatted);
 					});	
 				}
 				else {
