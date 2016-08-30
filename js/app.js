@@ -69,12 +69,12 @@ function initMap() {
 		infowindow.open(map, marker);
 	}
 
-	function populateInfoWindowWithTime(marker, infowindow, durationText) {
+	function populateInfoWindowWithTime(marker, infowindow, durationText, travelMode) {
 		infowindow.marker = marker;
 		infowindow.setContent(
 			'<div><center>' + 
 			marker.title + '<p>' +  
-			durationText + ' away, ' +
+			durationText + ' away by ' + travelMode +
 			'</div>');
 		infowindow.open(map, marker);
 	}
@@ -172,13 +172,13 @@ function initMap() {
 				window.alert("Error: " + status);
 			}
 			else {
-				displayMarkersWithinTime(response);
+				displayMarkersWithinTime(response, mode);
 			}
 		});
 		
 	}
 
-	function displayMarkersWithinTime(response) {
+	function displayMarkersWithinTime(response, mode) {
 		console.log("in displayMarkersWithinTime function");
 
 		//Get user input for max travel time
@@ -226,7 +226,7 @@ function initMap() {
 						
 						//Create an info window with travel time
 						markers[i].addListener('click', function() {
-							populateInfoWindowWithTime(this, largeInfoWindow, this.customInfo);
+							populateInfoWindowWithTime(this, largeInfoWindow, this.customInfo, mode);
 						});
 						
 
