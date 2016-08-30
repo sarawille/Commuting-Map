@@ -112,7 +112,7 @@ function initMap() {
 			}, function(results, status) {
 				if (status == google.maps.GeocoderStatus.OK) {
 					var newLocation = results[0].geometry.location;
-					var destinationFormatted = document.getElementById("geocodeOutput").innerHTML=results[0].formatted_address;
+					var destinationFormatted = results[0].formatted_address;
 					
 					//Move the map to show the Destination
 					map.setCenter(newLocation);
@@ -149,13 +149,13 @@ function initMap() {
 		//Get destination from user input
 		var destinationAddress = document.getElementById("destination").value;
 		
+		//DETE THIS:???
 		hideListings();
 
 		//Create an array "origins" containing the LatLng ("position") data from the markers array
 		var origins = [];
 		for (var i = 0; i < markers.length; i++) {
 			origins[i] = markers[i].position;
-			console.log(origins[i]);
 		}
 
 		//Get transportation mode from user input
@@ -166,7 +166,7 @@ function initMap() {
 			origins: origins,
 			destinations: [destinationAddress],
 			travelMode: google.maps.TravelMode[mode],
-			unitSystem: google.maps.UnitSystem.initMapERIAL,
+			unitSystem: google.maps.UnitSystem.initMapIMPERIAL,
 		}, function(response, status) {
 			if (status !== "OK") {
 				window.alert("Error: " + status);
