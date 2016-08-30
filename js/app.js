@@ -187,24 +187,31 @@ function initMap() {
 		var origins = response.originAddresses;
 		//Get array of destination addresses
 		var destinations = response.destinationAddresses;
-		//Parse through results to get distance and duration of each origin-destination pair
+
 		//Track whether at least one result is found
-		var atLeastOne = false;
+		var atLeastOne = false
+
+		//Bounds to hold map range for those points within the destination
+		var bounds = new google.maps.LatLngBounds();
+
+		//Parse through results to get distance and duration of each origin-destination pair
 		for (var i = 0; i < origins.length; i++) {
 			//Clear travel time for past search from info windows
 			markers[i].addListener('click', function() {
 				populateInfoWindow(this, largeInfoWindow);
 			});
+
 			//Tracks one element dataset per origin + destination pair
 			var results = response.rows[i].elements;
 			for (var j = 0; j < results.length; j++) {
 				var element = results[j];
 				if (element.status === "OK") {
-					//Distance returned in feet, but text is in miles
-					var distanceText = element.distance.text;
+					
 					//Duration value is returned in seconds, but we adjust it to minutes
 					var durationValue = element.duration.value / 60;
 					var durationText = element.duration.text;
+					var distanceText = element.distance.text;
+
 					if (durationValue <= maxTravelTime) {
 						atLeastOne = true;
 
@@ -213,6 +220,9 @@ function initMap() {
 
 						//Add durationText as custom data to each marker within the maxTravelTime
 						markers[i].customInfo = durationText;
+
+						//Extend map so new marker is within range
+						bounds.extend(markers[i].position);
 						
 						//Create an info window with travel time
 						markers[i].addListener('click', function() {
@@ -229,6 +239,15 @@ function initMap() {
 					}
 				}
 			}
+		}
+
+		//Tell map to fit boudnaries of markers
+		map.fitBounds(bounds);
+
+		//Display alert if nothing is found within the max travel time
+		if(atLeastOne === false) {
+				window.alert("Sorry, no locations were found within the maximum travel time selected.");
+				zoomToArea();
 		}
 
 	}
