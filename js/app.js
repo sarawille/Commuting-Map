@@ -20,6 +20,8 @@ function initMap() {
 	var largeInfoWindow = new google.maps.InfoWindow();
 
 	var destinationMarker = new google.maps.Marker();
+
+	var directionsDisplay;
 	
 	for (var i = 0; i < locations.length; i++) {
 		var thisTitle = locations[i].title;
@@ -74,8 +76,15 @@ function initMap() {
 		infowindow.setContent(
 			'<div><center>' + 
 			marker.title + '<p>' +  
-			durationText + ' away by ' + travelMode +
+			durationText + ' away by ' + travelMode + '<p>' +			 
+			'<input type=\"button\" value=\"View Route\" id=' +
+			'\"viewRouteButton\" />' +
 			'</div>');
+		console.log(marker.position);
+		//
+		document.getElementById("viewRouteButton").addEventListener('click', function() {
+			getDirections(marker.position);	
+		});
 		infowindow.open(map, marker);
 	}
 
@@ -99,6 +108,13 @@ function initMap() {
 
 	function zoomToArea() {
 		console.log("in zoomToArea function");
+
+		//Clear any existing directions/route from map
+		if (directionsDisplay != null) {
+        	directionsDisplay.setMap(null);
+        	directionsDisplay = null;
+    	}
+
 		var geocoder = new google.maps.Geocoder();
 		//Get the address entered by user
 		var destinationAddress = document.getElementById("destination").value;
@@ -184,9 +200,9 @@ function initMap() {
 		//Get user input for max travel time
 		var maxTravelTime = document.getElementById("commute-time").value;
 		//Get array of origin addresses
-		var origins = response.originAddresses;
+		var originsResponse = response.originAddresses;
 		//Get array of destination addresses
-		var destinations = response.destinationAddresses;
+		var destinationsResponse = response.destinationAddresses;
 
 		//Track whether at least one result is found
 		var atLeastOne = false
@@ -195,7 +211,7 @@ function initMap() {
 		var bounds = new google.maps.LatLngBounds();
 
 		//Parse through results to get distance and duration of each origin-destination pair
-		for (var i = 0; i < origins.length; i++) {
+		for (var i = 0; i < originsResponse.length; i++) {
 			//Clear travel time for past search from info windows
 			markers[i].addListener('click', function() {
 				populateInfoWindow(this, largeInfoWindow);
@@ -224,11 +240,14 @@ function initMap() {
 						//Extend map so new marker is within range
 						bounds.extend(markers[i].position);
 						
+						var origin = originsResponse[i];
+
 						//Create an info window with travel time
 						markers[i].addListener('click', function() {
 							populateInfoWindowWithTime(this, largeInfoWindow, this.customInfo, mode);
 						});
-						
+
+
 
 						//I think I can delete all of this commented-out code
 						//When user closes the small window (with travel time, distance)
@@ -241,8 +260,6 @@ function initMap() {
 			}
 		}
 
-
-
 		//Display alert if nothing is found within the max travel time
 		if(atLeastOne === false) {
 				window.alert("Sorry, no locations were found within the maximum travel time selected.");
@@ -252,7 +269,6 @@ function initMap() {
 			bounds.extend(destinationMarker.position);
 			map.fitBounds(bounds);
 		}
-
 	}
 
 	function showVal() {
@@ -261,4 +277,35 @@ function initMap() {
 		document.getElementById("selected-time").innerHTML=selectedTime;
 	}
 	
+	//Display the route on the map when user clicks button in the infowindow (populateInfoWindowWithTime())
+	function getDirections(origin) {
+		var directionsService = new google.maps.DirectionsService;
+
+		//Get the address entered by user
+		var destinationAddress = document.getElementById("destination").value;
+		//Get transportation mode from user input
+		var mode = document.querySelector('input[name="mode"]:checked').value;
+
+		directionsService.route({
+			origin: origin,
+			destination: destinationAddress,
+			travelMode: google.maps.TravelMode[mode],
+		}, function(response, status) {
+			if (status === google.maps.DirectionsStatus.OK) {
+				directionsDisplay = new google.maps.DirectionsRenderer({
+					map: map,
+					directions: response,
+					draggable: false,
+					polyLineOptions: {
+						strokeColor: 'green'
+					}
+				});
+			} else {
+				window.alert("Directions request failed due to " + status);
+			}
+		});
+	}
+
 }
+
+
