@@ -106,14 +106,18 @@ function initMap() {
 		}
 	}
 
-	function zoomToArea() {
-		console.log("in zoomToArea function");
-
+	function clearRoute() {
 		//Clear any existing directions/route from map
 		if (directionsDisplay != null) {
         	directionsDisplay.setMap(null);
         	directionsDisplay = null;
     	}
+	}
+
+	function zoomToArea() {
+		console.log("in zoomToArea function");
+
+		clearRoute();
 
 		var geocoder = new google.maps.Geocoder();
 		//Get the address entered by user
@@ -279,10 +283,13 @@ function initMap() {
 	
 	//Display the route on the map when user clicks button in the infowindow (populateInfoWindowWithTime())
 	function getDirections(origin) {
+		clearRoute();
+
 		var directionsService = new google.maps.DirectionsService;
 
 		//Get the address entered by user
 		var destinationAddress = document.getElementById("destination").value;
+
 		//Get transportation mode from user input
 		var mode = document.querySelector('input[name="mode"]:checked').value;
 
@@ -296,14 +303,12 @@ function initMap() {
 					map: map,
 					directions: response,
 					draggable: false,
-					polyLineOptions: {
-						strokeColor: 'green'
-					}
 				});
 			} else {
 				window.alert("Directions request failed due to " + status);
 			}
 		});
+
 	}
 
 }
